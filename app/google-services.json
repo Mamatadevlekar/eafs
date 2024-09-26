@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "888191260384",
+    "project_id": "eafs-f2721",
+    "storage_bucket": "eafs-f2721.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888191260384:android:00a7bfffbc1ffad6d2e285",
+        "android_client_info": {
+          "package_name": "com.tkiet.eafs"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDXsun5ca5wV8EJSpiVtsxLF5YZq5uXPDc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
