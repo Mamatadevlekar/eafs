@@ -168,4 +168,8 @@
     <string name="redirect_home_timer_text">Redirecting to home in %s</string>
     <string name="status_dialog_title">Select Status of Product</string>
     <string name="price_card_status_label_string">Order Status</string>
+    <string name="title_activity_bottom">BottomActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
