@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">eafs</string>
 
+    <string-array name="category_options">
+        <item>Study</item>
+        <item>Appliances</item>
+        <item>Notes</item>
+    </string-array>
+
 
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->

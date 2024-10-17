@@ -1,17 +1,14 @@
 package com.tkiet.eafs;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         textViewForgotPassword.setOnClickListener(view -> {
-            // later
+            // Handle password reset later
         });
     }
 
@@ -70,6 +67,12 @@ public class LoginActivity extends AppCompatActivity {
                         FirebaseUser user = firebaseAuth.getCurrentUser();
                         if (user != null && user.isEmailVerified()) {
                             Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
+
+                            // If "Remember Me" is checked, save login state
+                            if (switchRememberMe.isChecked()) {
+                                saveLoginState(true);
+                            }
+
                             startActivity(new Intent(LoginActivity.this, BottomActivity.class));
                             finish();
                         } else {
@@ -79,5 +82,12 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "Login Failed: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
+    }
+
+    private void saveLoginState(boolean isLoggedIn) {
+        SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("isLoggedIn", isLoggedIn);
+        editor.apply();
     }
 }
