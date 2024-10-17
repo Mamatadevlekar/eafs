@@ -50,5 +50,9 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.google.android.material:material:1.9.0")
     implementation("com.airbnb.android:lottie:6.0.1")
+    implementation("com.squareup.picasso:picasso:2.71828")
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
+    implementation("de.hdodenhof:circleimageview:3.1.0")  // For Circular ImageView
 
 }
