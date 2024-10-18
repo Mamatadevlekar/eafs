@@ -7,23 +7,22 @@
     android:layout_height="match_parent"
     tools:context=".Edit_account">
 
+    <!-- Toolbar for title and navigation -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:title="Edit Account"
-        app:navigationIcon="@drawable/ic_baseline_loginout" />
+        app:navigationIcon="@drawable/ic_baseline_loginout"
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Scrollable content for editing user details -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,26 +37,32 @@
                 android:paddingTop="80dp"
                 android:layout_marginBottom="16dp">
 
+                <!-- CircleImageView to show profile image -->
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profile_image_view"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_baseline_person_24"
                     app:civ_border_width="4dp"
-                    android:layout_gravity="center"
-                    tools:ignore="MissingClass"/>
+                    app:civ_border_color="@android:color/white" />
 
-                <Button
-                    android:id="@+id/select_profile_photo_button"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/rounded_select_photo_button"
-                    android:gravity="center"
-                    android:text="Change Photo"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white" />
+                <!-- Button to select a new profile image -->
+
             </FrameLayout>
 
+            <Button
+                android:id="@+id/select_profile_photo_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="Change Photo"
+                android:backgroundTint="#FFB74D"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                tools:ignore="MissingClass"
+                />
             <!-- Name Field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -70,8 +75,7 @@
                     android:id="@+id/edit_profile_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="John Doe"
-                    android:inputType="textPersonName"/>
+                    android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Address Field -->
@@ -86,8 +90,7 @@
                     android:id="@+id/edit_profile_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="123 Street, City"
-                    android:inputType="textPostalAddress"/>
+                    android:inputType="textPostalAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Phone Number Field -->
@@ -102,21 +105,31 @@
                     android:id="@+id/edit_profile_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="1234567890"
-                    android:inputType="phone"/>
+                    android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Save Button -->
+            <!-- Save Changes Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_save_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Save Changes"
-                android:backgroundTint="#FFB74D"
                 android:textAllCaps="false"
+                android:backgroundTint="#FFB74D"
                 android:textColor="@android:color/white"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginBottom="16dp" />
+
+            <!-- Lottie Animation for Saving Data -->
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lottieAnimation"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:lottie_autoPlay="false"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/splash"
+                android:visibility="gone" />
 
             <!-- Progress Bar for Saving -->
             <ProgressBar
@@ -125,8 +138,8 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center"
                 android:indeterminate="true"
-                android:visibility="gone"/>
+                app:lottie_rawRes="@raw/loading"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
