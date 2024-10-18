@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -17,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -26,23 +29,31 @@ import com.google.firebase.storage.UploadTask;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import com.airbnb.lottie.LottieAnimationView;
+
 public class Add_productActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-
+    private CircleImageView productImageView;
     private EditText productTitle, productDescription, productPrice;
     private AutoCompleteTextView categoryDropdown;
     private RadioGroup productTypeRadioGroup;
     private Button selectImageButton, submitProductButton;
-
+    private LottieAnimationView lottieAnimationView;
     private Uri imageUri;
     private StorageReference storageRef;
     private DatabaseReference databaseRef;
+
+    private FirebaseAuth firebaseAuth;  // Firebase Authentication
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
+
+        // Initialize Firebase Authentication
+        firebaseAuth = FirebaseAuth.getInstance();
 
         // Initialize views
         productTitle = findViewById(R.id.product_title);
@@ -52,10 +63,11 @@ public class Add_productActivity extends AppCompatActivity {
         productTypeRadioGroup = findViewById(R.id.product_type_radio_group);
         selectImageButton = findViewById(R.id.select_image_button);
         submitProductButton = findViewById(R.id.submit_product_button);
+        productImageView = findViewById(R.id.product_image);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line,
                 getResources().getStringArray(R.array.category_options));
-
+        lottieAnimationView = findViewById(R.id.lottieAnimation);
         categoryDropdown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -66,7 +78,7 @@ public class Add_productActivity extends AppCompatActivity {
         // Set the adapter to the AutoCompleteTextView
         categoryDropdown.setAdapter(adapter);
 
-        // Initialize Firebase
+        // Initialize Firebase Storage and Realtime Database
         storageRef = FirebaseStorage.getInstance().getReference("product_images");
         databaseRef = FirebaseDatabase.getInstance().getReference("products");
 
@@ -99,14 +111,23 @@ public class Add_productActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imageUri = data.getData();  // Get image URI
+
+            // Set the selected image to the CircleImageView
+            productImageView.setImageURI(imageUri);
+
+            // Hide the "Change Photo" button to avoid overlap
+            selectImageButton.setVisibility(View.GONE);
         }
     }
+
 
     private void uploadProduct() {
         final String title = productTitle.getText().toString();
         final String description = productDescription.getText().toString();
         final String price = productPrice.getText().toString();
         final String category = categoryDropdown.getText().toString();
+        lottieAnimationView.setVisibility(View.VISIBLE);
+        lottieAnimationView.playAnimation();
 
         // Get product type (Rent or Sell)
         int selectedTypeId = productTypeRadioGroup.getCheckedRadioButtonId();
@@ -117,6 +138,14 @@ public class Add_productActivity extends AppCompatActivity {
             return;
         }
 
+        // Get current user UID
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser == null) {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final String userId = currentUser.getUid();
+
         // Upload image to Firebase Storage
         final StorageReference fileRef = storageRef.child(System.currentTimeMillis() + ".jpg");
         fileRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -126,6 +155,8 @@ public class Add_productActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Uri uri) {
                         String imageUrl = uri.toString();
+                        lottieAnimationView.setVisibility(View.GONE);
+                        lottieAnimationView.cancelAnimation();
 
                         // Store product details in Firebase Realtime Database
                         String productId = databaseRef.push().getKey();
@@ -137,12 +168,14 @@ public class Add_productActivity extends AppCompatActivity {
                         productData.put("category", category);
                         productData.put("productType", productType);
                         productData.put("imageUrl", imageUrl);
+                        productData.put("addedBy", userId);  // Store the user's UID who added the product
 
                         databaseRef.child(productId).setValue(productData)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Toast.makeText(Add_productActivity.this, "Product added successfully", Toast.LENGTH_SHORT).show();
+                                        finish();
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
