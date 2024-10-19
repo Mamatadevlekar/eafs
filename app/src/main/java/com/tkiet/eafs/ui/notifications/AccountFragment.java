@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -30,18 +29,18 @@ import com.tkiet.eafs.Edit_account;
 import com.tkiet.eafs.My_ProductActivity;
 import com.tkiet.eafs.R;
 import com.tkiet.eafs.databinding.FragmentAccountBinding;
+import com.tkiet.eafs.LoadingFragment;  // Import the LoadingFragment
 
 public class AccountFragment extends Fragment {
     private ImageView profileImageView;
     private FragmentAccountBinding binding;
-    private TextView editProfileBtn, my_products, add_product, account_sign_out ,profile_name;
+    private TextView editProfileBtn, my_products, add_product, account_sign_out, profile_name;
     private DatabaseReference userDatabaseRef;
     private StorageReference storageReference;
     private FirebaseAuth auth;
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        AccountViewModel accountViewModel =
-                new ViewModelProvider(this).get(AccountViewModel.class);
+
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        AccountViewModel accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
 
         binding = FragmentAccountBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -49,7 +48,8 @@ public class AccountFragment extends Fragment {
         FirebaseUser currentUser = auth.getCurrentUser();
         userDatabaseRef = FirebaseDatabase.getInstance().getReference("users").child(currentUser.getUid());
         storageReference = FirebaseStorage.getInstance().getReference("profile_images");
-        loadUserData();
+
+        // Initialize views
         profile_name = root.findViewById(R.id.profile_name);
         profileImageView = root.findViewById(R.id.text_account);
         Toolbar toolbar = root.findViewById(R.id.toolbar);
@@ -59,55 +59,69 @@ public class AccountFragment extends Fragment {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        toolbar.setNavigationOnClickListener(v -> {
-            // Handle back button click
-            requireActivity().onBackPressed();
-        });
+        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
 
         // Initialize other buttons
         editProfileBtn = root.findViewById(R.id.account_profile_tv);
-        editProfileBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), Edit_account.class);
-            startActivity(intent);
-        });
+        editProfileBtn.setOnClickListener(v -> startActivity(new Intent(getActivity(), Edit_account.class)));
 
         my_products = root.findViewById(R.id.my_products);
-        my_products.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), My_ProductActivity.class);
-            startActivity(intent);
-        });
+        my_products.setOnClickListener(v -> startActivity(new Intent(getActivity(), My_ProductActivity.class)));
 
         add_product = root.findViewById(R.id.add_product);
-        add_product.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), Add_productActivity.class);
-            startActivity(intent);
-        });
+        add_product.setOnClickListener(v -> startActivity(new Intent(getActivity(), Add_productActivity.class)));
 
         account_sign_out = root.findViewById(R.id.account_sign_out);
         account_sign_out.setOnClickListener(v -> {
             // Sign out functionality can be added here
         });
 
+        loadUserData();  // Load user data with loading animation
+
         return root;
     }
+
+    // Show the loading fragment
+    private void showLoadingFragment() {
+        LoadingFragment loadingFragment = new LoadingFragment();
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, loadingFragment, "LOADING_FRAGMENT")
+                .commit();
+    }
+
+    // Hide the loading fragment
+    private void hideLoadingFragment() {
+        Fragment loadingFragment = requireActivity().getSupportFragmentManager().findFragmentByTag("LOADING_FRAGMENT");
+        if (loadingFragment != null) {
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(loadingFragment)
+                    .commit();
+        }
+    }
+
+    // Method to load user data from Firebase
     private void loadUserData() {
+        showLoadingFragment();  // Show loading animation when starting to load data
+
         userDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                hideLoadingFragment();  // Hide loading animation once data is loaded
+
                 if (dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue(String.class);
                     String imageUrl = dataSnapshot.child("profileImage").getValue(String.class);
 
-                    // Set data to EditTexts
                     profile_name.setText(name);
 
-
-                    // Load image if available using Glide
+                    // Load profile image using Glide
                     if (imageUrl != null) {
                         Glide.with(AccountFragment.this)
                                 .load(imageUrl)
-                                .placeholder(R.drawable.baseline_shopping_cart_24) // Add a placeholder image
-                                .error(R.drawable.cloud_download) // Add an error image
+                                .placeholder(R.drawable.baseline_shopping_cart_24)
+                                .error(R.drawable.cloud_download)
                                 .into(profileImageView);
                     }
                 }
@@ -115,10 +129,12 @@ public class AccountFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("EditAccountActivity", "Database Error: " + databaseError.getMessage());
+                hideLoadingFragment();  // Hide loading animation even if there is an error
+                Log.e("AccountFragment", "Database Error: " + databaseError.getMessage());
             }
         });
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();

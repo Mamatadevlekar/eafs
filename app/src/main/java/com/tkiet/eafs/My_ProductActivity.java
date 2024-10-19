@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,11 +54,13 @@ public class My_ProductActivity extends AppCompatActivity {
     }
 
     private void loadProducts(String userId) {
+        showLoadingFragment();
         productList = new ArrayList<>();
         databaseRef.orderByChild("addedBy").equalTo(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 productList.clear();
+                hideLoadingFragment();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Product product = snapshot.getValue(Product.class);
                     productList.add(product);
@@ -117,4 +120,21 @@ public class My_ProductActivity extends AppCompatActivity {
             }
         }
     }
+    private void showLoadingFragment() {
+        LoadingFragment loadingFragment = new LoadingFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, loadingFragment, "LOADING_FRAGMENT")
+                .commit();
+    }
+    private void hideLoadingFragment() {
+        Fragment loadingFragment = getSupportFragmentManager().findFragmentByTag("LOADING_FRAGMENT");
+        if (loadingFragment != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(loadingFragment)
+                    .commit();
+        }
+    }
+
 }

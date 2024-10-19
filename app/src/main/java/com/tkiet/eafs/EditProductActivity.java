@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -104,9 +105,11 @@ public class EditProductActivity extends AppCompatActivity {
     }
 
     private void loadProductDetails(String productId) {
+        showLoadingFragment();
         databaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                hideLoadingFragment();
                 Product product = snapshot.getValue(Product.class);
                 if (product != null) {
                     productTitle.setText(product.getTitle());
@@ -205,4 +208,22 @@ public class EditProductActivity extends AppCompatActivity {
             }).addOnFailureListener(e -> Toast.makeText(EditProductActivity.this, "Failed to delete product image", Toast.LENGTH_SHORT).show());
         }
     }
+    private void showLoadingFragment() {
+        LoadingFragment loadingFragment = new LoadingFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, loadingFragment, "LOADING_FRAGMENT")
+                .commit();
+    }
+
+    private void hideLoadingFragment() {
+        Fragment loadingFragment = getSupportFragmentManager().findFragmentByTag("LOADING_FRAGMENT");
+        if (loadingFragment != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(loadingFragment)
+                    .commit();
+        }
+    }
+
 }

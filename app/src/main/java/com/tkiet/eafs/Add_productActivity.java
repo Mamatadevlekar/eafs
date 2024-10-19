@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -122,6 +123,7 @@ public class Add_productActivity extends AppCompatActivity {
 
 
     private void uploadProduct() {
+        showLoadingFragment();
         final String title = productTitle.getText().toString();
         final String description = productDescription.getText().toString();
         final String price = productPrice.getText().toString();
@@ -174,6 +176,7 @@ public class Add_productActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        hideLoadingFragment();
                                         Toast.makeText(Add_productActivity.this, "Product added successfully", Toast.LENGTH_SHORT).show();
                                         finish();
                                     }
@@ -192,5 +195,23 @@ public class Add_productActivity extends AppCompatActivity {
                 Toast.makeText(Add_productActivity.this, "Image upload failed", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showLoadingFragment() {
+        LoadingFragment loadingFragment = new LoadingFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, loadingFragment, "LOADING_FRAGMENT")
+                .commit();
+    }
+
+    private void hideLoadingFragment() {
+        Fragment loadingFragment = getSupportFragmentManager().findFragmentByTag("LOADING_FRAGMENT");
+        if (loadingFragment != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .remove(loadingFragment)
+                    .commit();
+        }
     }
 }
