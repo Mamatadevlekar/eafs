@@ -15,6 +15,7 @@ lifecycleLivedataKtx = "2.8.6"
 lifecycleViewmodelKtx = "2.8.6"
 navigationFragment = "2.8.1"
 navigationUi = "2.8.1"
+playServicesAnalyticsImpl = "18.1.0"
 
 [libraries]
 firebase-database = { module = "com.google.firebase:firebase-database", version.ref = "firebaseDatabase" }
@@ -31,6 +32,7 @@ lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-lived
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
+play-services-analytics-impl = { group = "com.google.android.gms", name = "play-services-analytics-impl", version.ref = "playServicesAnalyticsImpl" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
