@@ -1,6 +1,11 @@
 package com.tkiet.eafs.ui.notifications;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.tkiet.eafs.Add_productActivity;
 import com.tkiet.eafs.Edit_account;
+import com.tkiet.eafs.LoginActivity;
 import com.tkiet.eafs.My_ProductActivity;
 import com.tkiet.eafs.R;
 import com.tkiet.eafs.databinding.FragmentAccountBinding;
@@ -73,7 +79,16 @@ public class AccountFragment extends Fragment {
 
         account_sign_out = root.findViewById(R.id.account_sign_out);
         account_sign_out.setOnClickListener(v -> {
-            // Sign out functionality can be added here
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("LoginPrefs", Context.MODE_PRIVATE);
+            boolean isLoggedIn = sharedPreferences.getBoolean("isLoggedIn", false);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();  // Clears all preferences
+            editor.apply();  // Save the changes
+
+            // Redirect to the LoginActivity
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish();
         });
 
         loadUserData();  // Load user data with loading animation
@@ -81,34 +96,14 @@ public class AccountFragment extends Fragment {
         return root;
     }
 
-    // Show the loading fragment
-    private void showLoadingFragment() {
-        LoadingFragment loadingFragment = new LoadingFragment();
-        requireActivity().getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, loadingFragment, "LOADING_FRAGMENT")
-                .commit();
-    }
 
-    // Hide the loading fragment
-    private void hideLoadingFragment() {
-        Fragment loadingFragment = requireActivity().getSupportFragmentManager().findFragmentByTag("LOADING_FRAGMENT");
-        if (loadingFragment != null) {
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .remove(loadingFragment)
-                    .commit();
-        }
-    }
 
     // Method to load user data from Firebase
     private void loadUserData() {
-        showLoadingFragment();  // Show loading animation when starting to load data
 
         userDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                hideLoadingFragment();  // Hide loading animation once data is loaded
 
                 if (dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue(String.class);
@@ -129,7 +124,6 @@ public class AccountFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                hideLoadingFragment();  // Hide loading animation even if there is an error
                 Log.e("AccountFragment", "Database Error: " + databaseError.getMessage());
             }
         });

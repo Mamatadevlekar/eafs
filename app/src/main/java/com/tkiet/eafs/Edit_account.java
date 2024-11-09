@@ -93,12 +93,10 @@ public class Edit_account extends AppCompatActivity {
     }
 
     private void loadUserData() {
-        showLoadingFragment();
         userDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    hideLoadingFragment();
                     String name = dataSnapshot.child("name").getValue(String.class);
                     String address = dataSnapshot.child("address").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
@@ -129,7 +127,6 @@ public class Edit_account extends AppCompatActivity {
 
     private void saveUserProfile() {
         // Show loading animation
-        showLoadingFragment();
         lottieAnimation.setVisibility(View.VISIBLE);
         lottieAnimation.playAnimation();
         progressBarSaveProfile.setVisibility(View.VISIBLE);
@@ -152,7 +149,6 @@ public class Edit_account extends AppCompatActivity {
                     // Hide loading animation
                     lottieAnimation.setVisibility(View.GONE);
                     progressBarSaveProfile.setVisibility(View.GONE);
-                    hideLoadingFragment();
                     Toast.makeText(Edit_account.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
                 }
             } else {
@@ -205,23 +201,6 @@ public class Edit_account extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-    private void showLoadingFragment() {
-        LoadingFragment loadingFragment = new LoadingFragment();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(android.R.id.content, loadingFragment, "LOADING_FRAGMENT")
-                .commit();
-    }
-
-    private void hideLoadingFragment() {
-        Fragment loadingFragment = getSupportFragmentManager().findFragmentByTag("LOADING_FRAGMENT");
-        if (loadingFragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .remove(loadingFragment)
-                    .commit();
         }
     }
 
