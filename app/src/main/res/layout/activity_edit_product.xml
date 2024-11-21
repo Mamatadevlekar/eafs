@@ -112,6 +112,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     android:layout_marginBottom="16dp">
 
                     <RadioButton
@@ -125,6 +126,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Sell" />
+                    <RadioButton
+                        android:id="@+id/radio_donate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Donate" />
                 </RadioGroup>
 
                 <!-- Category Dropdown -->

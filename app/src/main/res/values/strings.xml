@@ -2,10 +2,12 @@
     <string name="app_name">eafs</string>
 
     <string-array name="category_options">
-        <item>Study</item>
-        <item>Appliances</item>
+        <item>Equipments</item>
+        <item>Books</item>
         <item>Notes</item>
+        <item>PYQ Question Papers</item>
     </string-array>
+
 
 
     <string name="action_settings">Settings</string>

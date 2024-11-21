@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -116,6 +117,21 @@ public class EditProductActivity extends AppCompatActivity {
                     categoryDropdown.setText(product.getCategory(), false);
                     oldImageUrl = product.getImageUrl();  // Store the old image URL
                     Picasso.get().load(product.getImageUrl()).into(productImageView);
+
+                    // Safely log the product type without invoking toString() on null
+                    String productType = product.getType();
+                    if (productType != null) {
+                        Log.d("Product Type:", productType);
+                    } else {
+                        Log.d("Product Type:", "Type is null");
+                    }
+
+                    // Check product type and hide price field if it's Donate or PYQ Question Papers
+                    if ("Donate".equals(product.getCategory()) || "PYQ Question Papers".equals(product.getCategory())) {
+                        productPrice.setVisibility(View.GONE);  // Hide the price field
+                    } else {
+                        productPrice.setVisibility(View.VISIBLE);  // Ensure price field is visible for other product types
+                    }
                 }
             }
 
@@ -125,6 +141,8 @@ public class EditProductActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void saveProductChanges(String productId) {
         String title = productTitle.getText().toString();

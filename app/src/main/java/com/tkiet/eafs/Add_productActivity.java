@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.Toast;
+import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,16 +69,22 @@ public class Add_productActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line,
                 getResources().getStringArray(R.array.category_options));
+
+        categoryDropdown.setAdapter(adapter);
         lottieAnimationView = findViewById(R.id.lottieAnimation);
+
+
         categoryDropdown.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                categoryDropdown.showDropDown(); // Show dropdown when clicked
+                categoryDropdown.showDropDown(); // Force the dropdown to appear
             }
         });
 
-        // Set the adapter to the AutoCompleteTextView
-        categoryDropdown.setAdapter(adapter);
+        categoryDropdown.setOnItemClickListener((parent, view, position, id) -> {
+            String selectedCategory = parent.getItemAtPosition(position).toString();
+            handleProductTypeAvailability(selectedCategory);
+        });
 
         // Initialize Firebase Storage and Realtime Database
         storageRef = FirebaseStorage.getInstance().getReference("product_images");
@@ -121,6 +128,24 @@ public class Add_productActivity extends AppCompatActivity {
         }
     }
 
+    private void handleProductTypeAvailability(String selectedCategory) {
+        RadioButton rentButton = findViewById(R.id.radio_rent);
+        RadioButton sellButton = findViewById(R.id.radio_sell);
+        RadioButton donateButton = findViewById(R.id.radio_donate);
+
+        if ("Notes".equals(selectedCategory) || "PYQ Question Papers".equals(selectedCategory)) {
+            // Disable other options and select "Donate"
+            productPrice = findViewById(R.id.product_price);
+            productPrice.setVisibility(View.GONE);
+            rentButton.setEnabled(false);
+            sellButton.setEnabled(false);
+            donateButton.setChecked(true);
+        } else {
+            // Enable all options for other categories
+            rentButton.setEnabled(true);
+            sellButton.setEnabled(true);
+        }
+    }
 
     private void uploadProduct() {
         showLoadingFragment();
@@ -133,7 +158,14 @@ public class Add_productActivity extends AppCompatActivity {
 
         // Get product type (Rent or Sell)
         int selectedTypeId = productTypeRadioGroup.getCheckedRadioButtonId();
-        final String productType = (selectedTypeId == R.id.radio_rent) ? "Rent" : "Sell";
+        final String productType;
+        if (selectedTypeId == R.id.radio_rent) {
+            productType = "Rent";
+        } else if (selectedTypeId == R.id.radio_sell) {
+            productType = "Sell";
+        } else {
+            productType = "Donate";
+        }
 
         if (TextUtils.isEmpty(title) || TextUtils.isEmpty(description) || TextUtils.isEmpty(price) || imageUri == null) {
             Toast.makeText(this, "Please fill all fields and select an image.", Toast.LENGTH_SHORT).show();

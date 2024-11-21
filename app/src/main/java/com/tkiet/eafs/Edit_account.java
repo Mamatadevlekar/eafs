@@ -161,10 +161,13 @@ public class Edit_account extends AppCompatActivity {
 
     private void uploadImage() {
         if (imageUri != null) {
-            final StorageReference fileReference = storageReference.child("profileImage.jpg");
+            // Use the user's unique ID to create a unique file name
+            final String fileName = FirebaseAuth.getInstance().getCurrentUser().getUid() + "_profileImage.jpg";
+            final StorageReference fileReference = storageReference.child(fileName);
 
             fileReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
                 fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                    // Save the download URL to the user's database node
                     userDatabaseRef.child("profileImage").setValue(uri.toString()).addOnCompleteListener(task -> {
                         // Hide loading animation
                         lottieAnimation.setVisibility(View.GONE);
@@ -179,6 +182,7 @@ public class Edit_account extends AppCompatActivity {
             });
         }
     }
+
 
     private void openImageChooser() {
         Intent intent = new Intent();

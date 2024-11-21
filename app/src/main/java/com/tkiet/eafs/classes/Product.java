@@ -6,6 +6,7 @@ public class Product {
     private String price;
     private String category;
     private String imageUrl;
+    private String type;  // Add this field
 
     // Default constructor required for calls to DataSnapshot.getValue(Product.class)
     public Product() {
@@ -44,5 +45,12 @@ public class Product {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

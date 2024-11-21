@@ -43,8 +43,39 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         textViewForgotPassword.setOnClickListener(view -> {
-            // Handle password reset later
+            // Create an AlertDialog for entering the email
+            androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(LoginActivity.this);
+            builder.setTitle("Reset Password");
+
+            // Set up the input
+            final EditText input = new EditText(LoginActivity.this);
+            input.setHint("Enter your registered email");
+            input.setInputType(android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+            builder.setView(input);
+
+            // Set up the buttons
+            builder.setPositiveButton("Send", (dialog, which) -> {
+                String email = input.getText().toString().trim();
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(LoginActivity.this, "Email is required", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Send password reset email using Firebase
+                firebaseAuth.sendPasswordResetEmail(email)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this, "Password reset email sent. Check your inbox.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+            });
+
+            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+            builder.show();
         });
+
     }
 
     private void loginUser() {
