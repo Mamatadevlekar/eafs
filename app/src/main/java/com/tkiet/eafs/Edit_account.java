@@ -59,7 +59,7 @@ public class Edit_account extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_edit_account);
 
-        // Initialize Firebase Auth
+            // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = auth.getCurrentUser();
 

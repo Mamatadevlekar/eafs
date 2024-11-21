@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background color -->
+    <item android:drawable="@android:color/darker_gray" />
+
+    <!-- Icon or Text in the Center -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/onboardscreen3" />
+    </item>
+</layer-list>
