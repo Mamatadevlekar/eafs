@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">eafs</string>
+    <string name="app_name">EduMart</string>
 
     <string-array name="category_options">
         <item>Equipments</item>

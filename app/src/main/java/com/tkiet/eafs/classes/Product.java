@@ -8,6 +8,15 @@ public class Product {
     private String imageUrl;
     private String type;  // Add this field
 
+    public String getAddedBy() {
+        return addedBy;
+    }
+
+    public void setAddedBy(String addedBy) {
+        this.addedBy = addedBy;
+    }
+
+    private String addedBy;
     // Default constructor required for calls to DataSnapshot.getValue(Product.class)
     public Product() {
     }

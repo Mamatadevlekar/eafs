@@ -9,15 +9,33 @@
         android:id="@+id/categoryTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:paddingLeft="10dp"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/black"
+        android:layout_marginTop="3dp" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="3dp"
         android:overScrollMode="never" />
+
+    <TextView
+        android:id="@+id/noDataTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Data not available"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:paddingTop="16dp" />
 </LinearLayout>
