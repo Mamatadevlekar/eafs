@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment {
     private TextInputEditText searchEditText;
     private String currentUserId;
 
-    private final String[] categories = {"Books", "PYQ Question Papers", "Equipment", "Notes"};
+    private final String[] categories = {"Books", "PYQ Question Papers", "Equipments", "Notes"};
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

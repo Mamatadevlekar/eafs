@@ -20,7 +20,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:scaleType="centerCrop"
-            android:background="@drawable/loading" />
+            android:background="@drawable/loadinganim" />
 
         <TextView
             android:id="@+id/productTitle"
