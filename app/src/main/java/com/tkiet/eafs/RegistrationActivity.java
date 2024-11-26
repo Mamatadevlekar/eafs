@@ -69,6 +69,11 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
+        if (!isPasswordValid(password)) {
+            editTextPassword.setError("Password must be 8-12 characters, include at least one uppercase letter, one lowercase letter, and one special character.");
+            return;
+        }
+
         if (!password.equals(confirmPassword)) {
             editTextConfirmPassword.setError("Passwords do not match");
             return;
@@ -106,4 +111,12 @@ public class RegistrationActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    // Add this helper method to validate the password
+    private boolean isPasswordValid(String password) {
+        // Regular expression for the password validation
+        String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z\\d!@#$%^&*(),.?\":{}|<>]{8,12}$";
+        return password.matches(passwordPattern);
+    }
+
 }
