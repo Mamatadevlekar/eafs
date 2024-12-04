@@ -1,8 +1,10 @@
 package com.tkiet.eafs.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,7 +46,7 @@ public class ChatActivity extends AppCompatActivity {
 
         // Initialize message list and adapter
         messageList = new ArrayList<>();
-        chatAdapter = new ChatAdapter(messageList);
+        chatAdapter = new ChatAdapter(messageList, currentUserId);
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatRecyclerView.setAdapter(chatAdapter);
 
@@ -89,18 +91,42 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendMessage(String messageText) {
         String messageId = FirebaseDatabase.getInstance().getReference().push().getKey();
-        Message message = new Message(currentUserId, otherUserId, messageText, System.currentTimeMillis());
+        long timestamp = System.currentTimeMillis();
+        Message message = new Message(currentUserId, otherUserId, messageText, timestamp);
 
-        DatabaseReference senderRef = FirebaseDatabase.getInstance().getReference("Messages")
-                .child(currentUserId)
-                .child(otherUserId)
-                .child(messageId);
-        senderRef.setValue(message);
+        if (messageId != null) {
+            // Save message to the sender's chat
+            DatabaseReference senderRef = FirebaseDatabase.getInstance().getReference("Messages")
+                    .child(currentUserId)
+                    .child(otherUserId)
+                    .child(messageId);
 
-        DatabaseReference receiverRef = FirebaseDatabase.getInstance().getReference("Messages")
-                .child(otherUserId)
-                .child(currentUserId)
-                .child(messageId);
-        receiverRef.setValue(message);
+            senderRef.setValue(message).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    // Save message to the receiver's chat
+                    DatabaseReference receiverRef = FirebaseDatabase.getInstance().getReference("Messages")
+                            .child(otherUserId)
+                            .child(currentUserId)
+                            .child(messageId);
+
+                    receiverRef.setValue(message).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            // Optionally show a success toast
+                            Toast.makeText(ChatActivity.this, "Message sent", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Handle failure to save to the receiver
+                            Toast.makeText(ChatActivity.this, "Failed to send message", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    // Handle failure to save to the sender
+                    Toast.makeText(ChatActivity.this, "Failed to send message", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // If message ID is null, log an error
+            Log.e("ChatActivity", "Failed to generate message ID");
+        }
     }
+
 }

@@ -13,30 +13,49 @@ import com.tkiet.eafs.R;
 
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
     private List<Message> messageList;
-    private String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    private String currentUserId;
 
-    public ChatAdapter(List<Message> messageList) {
+    public ChatAdapter(List<Message> messageList, String currentUserId) {
         this.messageList = messageList;
+        this.currentUserId = currentUserId;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item, parent, false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Message message = messageList.get(position);
-        holder.messageText.setText(message.getMessageText());
-
-        // Differentiate sender and receiver messages
-        if (message.getSenderId().equals(currentUserId)) {
-            holder.messageText.setGravity(Gravity.END);
+    public int getItemViewType(int position) {
+        // Check if the message is from the current user
+        if (messageList.get(position).getSenderId().equals(currentUserId)) {
+            return 1;  // Right side
         } else {
-            holder.messageText.setGravity(Gravity.START);
+            return 2;  // Left side
+        }
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == 1) {
+            // Inflate the layout for the current user's message (right side)
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_right_message, parent, false);
+            return new RightMessageViewHolder(view);
+        } else {
+            // Inflate the layout for the other user's message (left side)
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_left_message, parent, false);
+            return new LeftMessageViewHolder(view);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Message message = messageList.get(position);
+
+        if (holder instanceof RightMessageViewHolder) {
+            // Set the message text for the current user's message (right side)
+            ((RightMessageViewHolder) holder).messageTextRight.setText(message.getMessageText());
+        } else if (holder instanceof LeftMessageViewHolder) {
+            // Set the message text for the other user's message (left side)
+            ((LeftMessageViewHolder) holder).messageTextLeft.setText(message.getMessageText());
         }
     }
 
@@ -45,12 +64,23 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         return messageList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView messageText;
+    // ViewHolder for the current user's message (right side)
+    public static class RightMessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageTextRight;
 
-        public ViewHolder(View itemView) {
+        public RightMessageViewHolder(View itemView) {
             super(itemView);
-            messageText = itemView.findViewById(R.id.messageText);
+            messageTextRight = itemView.findViewById(R.id.messageTextRight);
+        }
+    }
+
+    // ViewHolder for the other user's message (left side)
+    public static class LeftMessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageTextLeft;
+
+        public LeftMessageViewHolder(View itemView) {
+            super(itemView);
+            messageTextLeft = itemView.findViewById(R.id.messageTextLeft);
         }
     }
 }
