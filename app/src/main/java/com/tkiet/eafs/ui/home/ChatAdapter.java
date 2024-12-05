@@ -1,5 +1,6 @@
 package com.tkiet.eafs.ui.home;
 
+import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,22 +26,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        // Check if the message is from the current user
-        if (messageList.get(position).getSenderId().equals(currentUserId)) {
-            return 1;  // Right side
-        } else {
-            return 2;  // Left side
-        }
+        // Determine if the message is from the current user
+        return messageList.get(position).getSenderId().equals(currentUserId) ? 1 : 2;
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == 1) {
-            // Inflate the layout for the current user's message (right side)
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_right_message, parent, false);
             return new RightMessageViewHolder(view);
         } else {
-            // Inflate the layout for the other user's message (left side)
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_left_message, parent, false);
             return new LeftMessageViewHolder(view);
         }
@@ -49,13 +44,14 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         Message message = messageList.get(position);
+        String formattedTime = DateFormat.format("hh:mm a", message.getTimestamp()).toString(); // Format timestamp
 
         if (holder instanceof RightMessageViewHolder) {
-            // Set the message text for the current user's message (right side)
             ((RightMessageViewHolder) holder).messageTextRight.setText(message.getMessageText());
+            ((RightMessageViewHolder) holder).messageTimestampRight.setText(formattedTime);
         } else if (holder instanceof LeftMessageViewHolder) {
-            // Set the message text for the other user's message (left side)
             ((LeftMessageViewHolder) holder).messageTextLeft.setText(message.getMessageText());
+            ((LeftMessageViewHolder) holder).messageTimestampLeft.setText(formattedTime);
         }
     }
 
@@ -66,21 +62,23 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // ViewHolder for the current user's message (right side)
     public static class RightMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextRight;
+        TextView messageTextRight, messageTimestampRight;
 
         public RightMessageViewHolder(View itemView) {
             super(itemView);
             messageTextRight = itemView.findViewById(R.id.messageTextRight);
+            messageTimestampRight = itemView.findViewById(R.id.messageTimestampRight);
         }
     }
 
     // ViewHolder for the other user's message (left side)
     public static class LeftMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextLeft;
+        TextView messageTextLeft, messageTimestampLeft;
 
         public LeftMessageViewHolder(View itemView) {
             super(itemView);
             messageTextLeft = itemView.findViewById(R.id.messageTextLeft);
+            messageTimestampLeft = itemView.findViewById(R.id.messageTimestampLeft);
         }
     }
 }
