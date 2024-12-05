@@ -1,6 +1,7 @@
 package com.tkiet.eafs.ui.home;
 
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,9 +45,9 @@ public class ChatActivity extends AppCompatActivity {
         messageInput = findViewById(R.id.messageInput);
         sendButton = findViewById(R.id.sendButton);
 
-        // Initialize message list and adapter
-        messageList = new ArrayList<>();
-        chatAdapter = new ChatAdapter(messageList, currentUserId);
+        // Initialize chat item list and adapter
+        List<ChatItem> chatItemList = new ArrayList<>();
+        chatAdapter = new ChatAdapter(chatItemList, currentUserId);
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatRecyclerView.setAdapter(chatAdapter);
 
@@ -74,12 +75,24 @@ public class ChatActivity extends AppCompatActivity {
         chatRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                messageList.clear();
+                List<ChatItem> chatItemList = new ArrayList<>(); // Use ChatItem list
+                String lastDate = ""; // Track the last date
+
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
-                    messageList.add(message);
+                    String messageDate = DateFormat.format("dd MMM yyyy", message.getTimestamp()).toString();
+
+                    // Add date header if it's a new day
+                    if (!messageDate.equals(lastDate)) {
+                        chatItemList.add(new ChatItem(messageDate)); // Add date header
+                        lastDate = messageDate;
+                    }
+                    chatItemList.add(new ChatItem(message)); // Add message
                 }
-                chatAdapter.notifyDataSetChanged();
+
+                // Initialize the adapter with the new ChatItem list
+                chatAdapter = new ChatAdapter(chatItemList, currentUserId);
+                chatRecyclerView.setAdapter(chatAdapter);
             }
 
             @Override
@@ -88,6 +101,8 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void sendMessage(String messageText) {
         String messageId = FirebaseDatabase.getInstance().getReference().push().getKey();

@@ -16,69 +16,72 @@ import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private List<Message> messageList;
+    private List<ChatItem> chatItemList;
     private String currentUserId;
 
-    public ChatAdapter(List<Message> messageList, String currentUserId) {
-        this.messageList = messageList;
+    public ChatAdapter(List<ChatItem> chatItemList, String currentUserId) {
+        this.chatItemList = chatItemList;
         this.currentUserId = currentUserId;
     }
 
     @Override
     public int getItemViewType(int position) {
-        // Determine if the message is from the current user
-        return messageList.get(position).getSenderId().equals(currentUserId) ? 1 : 2;
+        return chatItemList.get(position).getType();
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == 1) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_right_message, parent, false);
-            return new RightMessageViewHolder(view);
+        if (viewType == ChatItem.TYPE_MESSAGE) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.item_right_message, parent, false);
+            return new MessageViewHolder(view);
         } else {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_left_message, parent, false);
-            return new LeftMessageViewHolder(view);
+            View view = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.item_date_header, parent, false);
+            return new DateViewHolder(view);
         }
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        Message message = messageList.get(position);
-        String formattedTime = DateFormat.format("hh:mm a", message.getTimestamp()).toString(); // Format timestamp
+        ChatItem chatItem = chatItemList.get(position);
 
-        if (holder instanceof RightMessageViewHolder) {
-            ((RightMessageViewHolder) holder).messageTextRight.setText(message.getMessageText());
-            ((RightMessageViewHolder) holder).messageTimestampRight.setText(formattedTime);
-        } else if (holder instanceof LeftMessageViewHolder) {
-            ((LeftMessageViewHolder) holder).messageTextLeft.setText(message.getMessageText());
-            ((LeftMessageViewHolder) holder).messageTimestampLeft.setText(formattedTime);
+        if (chatItem.getType() == ChatItem.TYPE_MESSAGE) {
+            Message message = chatItem.getMessage();
+            String formattedTime = DateFormat.format("hh:mm a", message.getTimestamp()).toString();
+            MessageViewHolder messageHolder = (MessageViewHolder) holder;
+
+            messageHolder.messageText.setText(message.getMessageText());
+            messageHolder.timestamp.setText(formattedTime);
+        } else {
+            DateViewHolder dateHolder = (DateViewHolder) holder;
+            dateHolder.dateHeader.setText(chatItem.getDateHeader());
         }
     }
 
     @Override
     public int getItemCount() {
-        return messageList.size();
+        return chatItemList.size();
     }
 
-    // ViewHolder for the current user's message (right side)
-    public static class RightMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextRight, messageTimestampRight;
+    // ViewHolder for messages
+    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText, timestamp;
 
-        public RightMessageViewHolder(View itemView) {
+        public MessageViewHolder(View itemView) {
             super(itemView);
-            messageTextRight = itemView.findViewById(R.id.messageTextRight);
-            messageTimestampRight = itemView.findViewById(R.id.messageTimestampRight);
+            messageText = itemView.findViewById(R.id.messageTextRight); // or Left based on your design
+            timestamp = itemView.findViewById(R.id.messageTimestampRight); // or Left based on your design
         }
     }
 
-    // ViewHolder for the other user's message (left side)
-    public static class LeftMessageViewHolder extends RecyclerView.ViewHolder {
-        TextView messageTextLeft, messageTimestampLeft;
+    // ViewHolder for date headers
+    public static class DateViewHolder extends RecyclerView.ViewHolder {
+        TextView dateHeader;
 
-        public LeftMessageViewHolder(View itemView) {
+        public DateViewHolder(View itemView) {
             super(itemView);
-            messageTextLeft = itemView.findViewById(R.id.messageTextLeft);
-            messageTimestampLeft = itemView.findViewById(R.id.messageTimestampLeft);
+            dateHeader = itemView.findViewById(R.id.dateHeader);
         }
     }
 }
