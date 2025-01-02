@@ -44,6 +44,7 @@ public class AccountFragment extends Fragment {
     private DatabaseReference userDatabaseRef;
     private StorageReference storageReference;
     private FirebaseAuth auth;
+    private TextView admin;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         AccountViewModel accountViewModel = new ViewModelProvider(this).get(AccountViewModel.class);
@@ -54,6 +55,8 @@ public class AccountFragment extends Fragment {
         FirebaseUser currentUser = auth.getCurrentUser();
         userDatabaseRef = FirebaseDatabase.getInstance().getReference("users").child(currentUser.getUid());
         storageReference = FirebaseStorage.getInstance().getReference("profile_images");
+        admin = root.findViewById(R.id.admin);
+        admin.setVisibility(View.GONE); // Hide by default
 
         // Initialize views
         profile_name = root.findViewById(R.id.profile_name);
@@ -100,11 +103,9 @@ public class AccountFragment extends Fragment {
 
     // Method to load user data from Firebase
     private void loadUserData() {
-
         userDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 if (dataSnapshot.exists()) {
                     String name = dataSnapshot.child("name").getValue(String.class);
                     String imageUrl = dataSnapshot.child("profileImage").getValue(String.class);
@@ -127,7 +128,27 @@ public class AccountFragment extends Fragment {
                 Log.e("AccountFragment", "Database Error: " + databaseError.getMessage());
             }
         });
+
+        // Check admin status
+        DatabaseReference adminRef = FirebaseDatabase.getInstance().getReference("Admin");
+        adminRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                if (snapshot.hasChild(currentUserId)) {
+                    admin.setVisibility(View.VISIBLE); // Show the admin button
+                    admin.setOnClickListener(v -> startActivity(new Intent(getActivity(), AdminActivity.class)));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("AccountFragment", "Admin check failed: " + error.getMessage());
+            }
+        });
     }
+
 
     @Override
     public void onDestroyView() {
