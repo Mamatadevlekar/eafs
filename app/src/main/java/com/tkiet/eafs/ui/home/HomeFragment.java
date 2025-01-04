@@ -65,11 +65,18 @@ public class HomeFragment extends Fragment {
                 if (task.isSuccessful() && task.getResult() != null) {
                     productList.clear();
                     for (DataSnapshot snapshot : task.getResult().getChildren()) {
+                        Log.d("HomeFragment", "Snapshot raw data: " + snapshot.getValue());
+
+                        // Manually fetch 'isVerified' to ensure correct parsing
+                        Boolean isVerified = snapshot.child("isVerified").getValue(Boolean.class);
+                        Log.d("HomeFragment", "isVerified fetched manually: " + isVerified);
+
                         Product product = snapshot.getValue(Product.class);
-                        // Check for null values
-                        if (product != null && product.getTitle() != null && product.getAddedBy() != null &&
-                                !product.getAddedBy().equals(currentUserId)) {
-                            productList.add(product);
+                        if (product != null) {
+                            Log.d("HomeFragment", "Product fetched: " + product.getTitle() + ", isVerified: " + product.isVerified());
+                            if (isVerified && !product.getAddedBy().equals(currentUserId)) {
+                                productList.add(product);
+                            }
                         }
                     }
                     noDataTextView.setVisibility(productList.isEmpty() ? View.VISIBLE : View.GONE);
@@ -79,9 +86,12 @@ public class HomeFragment extends Fragment {
                 }
             });
 
+
+
             categoriesContainer.addView(categoryView);
         }
     }
+
 
     private void setupSearch() {
         searchEditText.addTextChangedListener(new TextWatcher() {

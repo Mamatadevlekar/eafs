@@ -7,7 +7,7 @@ public class Product {
     private String category;
     private String imageUrl;
     private String type;  // Add this field
-
+    private boolean isVerified;
     public String getAddedBy() {
         return addedBy;
     }
@@ -29,6 +29,7 @@ public class Product {
         this.price = price;
         this.category = category;
         this.imageUrl = imageUrl;
+        this.isVerified = isVerified;
     }
 
     // Getter method for productId
@@ -62,4 +63,10 @@ public class Product {
     public void setType(String type) {
         this.type = type;
     }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+    public boolean isVerified() { return isVerified; } // Correct getter
+
 }

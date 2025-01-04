@@ -203,7 +203,7 @@ public class Add_productActivity extends AppCompatActivity {
                         productData.put("productType", productType);
                         productData.put("imageUrl", imageUrl);
                         productData.put("addedBy", userId);  // Store the user's UID who added the product
-
+                        productData.put("isVerified" , false);
                         databaseRef.child(productId).setValue(productData)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override

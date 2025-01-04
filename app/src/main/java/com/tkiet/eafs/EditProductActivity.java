@@ -195,7 +195,7 @@ public class EditProductActivity extends AppCompatActivity {
         productUpdates.put("price", price);
         productUpdates.put("category", category);
         productUpdates.put("imageUrl", imageUrl);
-
+        productUpdates.put("isVerified" , false);
         databaseRef.updateChildren(productUpdates).addOnSuccessListener(aVoid -> {
             Toast.makeText(EditProductActivity.this, "Product updated successfully", Toast.LENGTH_SHORT).show();
             finish();
