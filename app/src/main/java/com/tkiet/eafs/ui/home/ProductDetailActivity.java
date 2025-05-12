@@ -56,6 +56,21 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         // Load product details
         loadProductDetails();
+        Button buyButton = findViewById(R.id.buyButton);
+        buyButton.setOnClickListener(v -> {
+            String price = productPrice.getText().toString().trim();
+            String name = productTitle.getText().toString().trim();
+
+            if (price.isEmpty() || name.isEmpty()) {
+                Toast.makeText(ProductDetailActivity.this, "Missing product info", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent intent = new Intent(ProductDetailActivity.this, PaymentActivity.class);
+            intent.putExtra("amount", price);
+            intent.putExtra("name", name);
+            startActivity(intent);
+        });
 
         // Set up the back button
         findViewById(R.id.topAppBar).setOnClickListener(v -> onBackPressed());
@@ -115,6 +130,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                         intent.putExtra("userId", userId);
                         startActivity(intent);
                     });
+
                 } else {
                     Toast.makeText(ProductDetailActivity.this, "User details not found", Toast.LENGTH_SHORT).show();
                 }

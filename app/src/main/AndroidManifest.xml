@@ -17,6 +17,9 @@
         android:theme="@style/Theme.Eafs"
         tools:targetApi="31">
         <activity
+            android:name=".ui.home.PaymentActivity"
+            android:exported="false" />
+        <activity
             android:name=".item_admin_product"
             android:exported="false" />
         <activity

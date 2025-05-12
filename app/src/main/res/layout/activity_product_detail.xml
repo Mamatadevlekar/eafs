@@ -151,6 +151,13 @@
                 android:layout_height="wrap_content"
                 android:text="Contact Us"
                 android:layout_marginTop="8dp"/>
+
+            <Button
+                android:id="@+id/buyButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Buy"
+                android:layout_marginTop="8dp"/>
         </LinearLayout>
     </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
